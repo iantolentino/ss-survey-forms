@@ -1,0 +1,9 @@
+/.local/
+/dist/
+.env
+.env.*
+*.sqlite
+*.sqlite-*
+*.db
+*.zip
+__pycache__/
