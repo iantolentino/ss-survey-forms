@@ -9,6 +9,8 @@ survey/
     submit.php       saves the answer (htmx posts here)
     results.php      password-protected individual responses + CSV download
     data/            SQLite file is created here on first page visit
+  personal-equipment-internet-access-poll-survey/  equipment and internet poll with separate results and database
+  results.php        password-protected results hub with survey selector and per-survey CSV export
 ```
 
 ## Run locally
@@ -16,20 +18,32 @@ survey/
 cd survey
 php -S localhost:8000
 ```
-Open http://localhost:8000/ai-use-survey/ (form) and /ai-use-survey/results.php (results).
+Open http://localhost:8000/ai-use-survey/ or http://localhost:8000/personal-equipment-internet-access-poll-survey/ (forms).
+Use /results.php to select a survey and view/export its results. Expand a response and confirm before deleting it; deleted responses are permanently removed from the database and future CSV exports. Each survey also keeps its own results.php page.
 Needs PHP 8+ with pdo_sqlite and mbstring enabled for this domain.
 
 ## Before sharing
-1. Open `ai-use-survey/form.php` and change `admin_password` (results stay locked while it is `change-me`).
-2. Upload the whole `survey` folder (keep `shared` next to `ai-use-survey`).
-3. Make sure `ai-use-survey/data/` is writable by PHP. It gets its own `.htaccess` that blocks web access to the database.
+1. Check each survey's `admin_password` in its `form.php` before sharing its results page.
+2. Upload the whole `survey` folder (keep `shared` next to each survey folder).
+3. Make sure each survey's `data/` directory is writable by PHP. Its `.htaccess` blocks web access to the database.
 
 ## Make a new survey
 1. Copy `ai-use-survey` to `survey/<new-name>`.
 2. Delete the `.sqlite` file inside the copy's `data/`.
 3. Edit `form.php`: change `slug`, `title`, `db_path` if needed, the password, and the questions.
-   Types: `text`, `textarea`, `radio`, `checkbox`, `multiselect`. Add `'other' => true` for an "Other" box
+   Types: `text`, `textarea`, `time`, `radio`, `checkbox`, `multiselect`. Add `'other' => true` for an "Other" box
    and `'hide_if' => ['q2' => ['No']]` for skip logic.
+
+The `personal-equipment-internet-access-poll-survey` folder is a second independent survey; its shift schedule uses a native time picker. It has its own
+`data/survey.sqlite`, results login, and CSV export. Its public form path is
+`/survey/personal-equipment-internet-access-poll-survey/`.
+
+To prepare this new survey for the existing site, run this from the repository root:
+```sh
+python tools/build-package.py --survey personal-equipment-internet-access-poll-survey --output dist/personal-equipment-internet-access-poll-survey.zip
+```
+The package contains the shared runtime, results hub, and only this survey's files, including its configured password.
+Keep it out of public source and use `/survey/personal-equipment-internet-access-poll-survey/results.php` or `/survey/results.php` for results.
 
 Email is required and saved with each response. Responses are not anonymous; no IP or user agent is stored. The same person can submit more than once.
 

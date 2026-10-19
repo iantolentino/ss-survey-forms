@@ -7,3 +7,5 @@
 *.db
 *.zip
 __pycache__/
+/_brain/sessions/manifests/context-*.md
+/_brain/CONTEXT_DIFF.md

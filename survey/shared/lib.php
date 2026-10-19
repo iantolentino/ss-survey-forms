@@ -43,6 +43,21 @@ function survey_db(array $form): PDO
     return $pdo;
 }
 
+function survey_csrf_token(): string
+{
+    if (empty($_SESSION['survey_csrf_token'])) {
+        $_SESSION['survey_csrf_token'] = bin2hex(random_bytes(32));
+    }
+    return $_SESSION['survey_csrf_token'];
+}
+
+function survey_valid_csrf($token): bool
+{
+    return is_string($token)
+        && isset($_SESSION['survey_csrf_token'])
+        && hash_equals($_SESSION['survey_csrf_token'], $token);
+}
+
 function survey_manila(string $utc): string
 {
     $d = new DateTime($utc, new DateTimeZone('UTC'));
@@ -130,7 +145,7 @@ var htmx=function(){"use strict";const Q={onLoad:null,process:null,on:null,off:n
     });
     var answered = required.filter(function (q) {
       var choices = q.querySelectorAll('input[type=radio], input[type=checkbox]');
-      var filled = choices.length ? !!q.querySelector('input:checked') : Array.prototype.some.call(q.querySelectorAll('input[type=text], input[type=email], textarea'), function (i) {
+      var filled = choices.length ? !!q.querySelector('input:checked') : Array.prototype.some.call(q.querySelectorAll('input[type=text], input[type=email], input[type=time], textarea'), function (i) {
         return !i.disabled && i.value.trim() !== '' && i.validity.valid;
       });
       var other = q.querySelector('.other-input');
@@ -238,6 +253,18 @@ function survey_render_question(array $q, int $num): string
       <?php elseif ($type === 'textarea'): ?>
         <textarea name="<?= e($key) ?>" rows="4" maxlength="2000" aria-label="<?= e($q['label']) ?>"<?= $required ? ' required' : '' ?>></textarea>
 
+      <?php elseif ($type === 'time'): ?>
+        <div class="opts" role="radiogroup" aria-label="Choose a shift schedule">
+          <label class="opt"><input type="radio" name="<?= e($key) ?>" value="06:00-15:00"<?= $required ? ' required' : '' ?>><span>6:00 AM to 3:00 PM</span></label>
+          <label class="opt"><input type="radio" name="<?= e($key) ?>" value="07:00-16:00"<?= $required ? ' required' : '' ?>><span>7:00 AM to 4:00 PM</span></label>
+          <label class="opt"><input type="radio" name="<?= e($key) ?>" value="custom"<?= $required ? ' required' : '' ?>><span>Choose custom times</span></label>
+        </div>
+        <p class="hint">For a different shift, choose custom times and enter both times below.</p>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px">
+          <label>Custom start time<input type="time" name="<?= e($key) ?>_start" step="60" aria-label="Custom shift start time"></label>
+          <label>Custom end time<input type="time" name="<?= e($key) ?>_end" step="60" aria-label="Custom shift end time"></label>
+        </div>
+
       <?php elseif ($type === 'radio'): ?>
         <div class="opts">
         <?php foreach ($opts as $o): ?>
@@ -323,9 +350,40 @@ function survey_collect(array $form, array $post): array
         $required = $q['required'] ?? true;
         $raw      = $post[$key] ?? null;
 
+        if ($q['type'] === 'time') {
+            $shift = is_string($raw) ? trim($raw) : '';
+            $presets = [
+                '06:00-15:00' => '6:00 AM to 3:00 PM',
+                '07:00-16:00' => '7:00 AM to 4:00 PM',
+            ];
+
+            if (isset($presets[$shift])) {
+                $answers[$key] = $presets[$shift];
+            } elseif ($shift === 'custom') {
+                $start = is_string($post[$key . '_start'] ?? null) ? trim($post[$key . '_start']) : '';
+                $end = is_string($post[$key . '_end'] ?? null) ? trim($post[$key . '_end']) : '';
+                if (!preg_match('/^(?:[01]\d|2[0-3]):[0-5]\d$/', $start) || !preg_match('/^(?:[01]\d|2[0-3]):[0-5]\d$/', $end)) {
+                    $errors[] = "Question $num: enter a valid custom start and end time.";
+                } else {
+                    $startTime = DateTime::createFromFormat('!H:i', $start);
+                    $endTime = DateTime::createFromFormat('!H:i', $end);
+                    $answers[$key] = $startTime->format('g:i A') . ' to ' . $endTime->format('g:i A');
+                }
+            } elseif ($shift === '') {
+                if ($required) {
+                    $errors[] = "Question $num is required.";
+                } else {
+                    $answers[$key] = '';
+                }
+            } else {
+                $errors[] = "Question $num has an invalid shift selection.";
+            }
+            continue;
+        }
+
         if ($q['type'] === 'text' || $q['type'] === 'textarea') {
             $val = is_string($raw) ? trim($raw) : '';
-            $max = $q['type'] === 'text' ? 200 : 2000;
+            $max = $q['type'] === 'textarea' ? 2000 : 200;
             if (mb_strlen($val) > $max) {
                 $val = mb_substr($val, 0, $max);
             }

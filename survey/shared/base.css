@@ -60,9 +60,9 @@ h1 { font-size: clamp(28px, 3.7vw, 44px); line-height: 1.16; letter-spacing: -1.
 .opt:has(input:checked) { border-color: var(--green); background: var(--accent-soft); }
 .opt:has(input:focus-visible) { outline: 3px solid var(--blue); outline-offset: 2px; }
 .opt input { margin: 3px 0 0; width: 17px; height: 17px; accent-color: var(--green); flex: none; }
-input[type=text], input[type=password], textarea { display: block; width: 100%; padding: 13px 14px; border: 1px solid #bfcbd0; border-radius: 8px; background: #fff; color: var(--ink); margin-top: 3px; font-size: 15px; }
+input[type=text], input[type=password], input[type=time], textarea { display: block; width: 100%; padding: 13px 14px; border: 1px solid #bfcbd0; border-radius: 8px; background: #fff; color: var(--ink); margin-top: 3px; font-size: 15px; }
 input::placeholder, textarea::placeholder { color: #656b70; opacity: 1; }
-input[type=text]:focus-visible, input[type=password]:focus-visible, textarea:focus-visible { border-color: var(--blue); outline-offset: 2px; }
+input[type=text]:focus-visible, input[type=password]:focus-visible, input[type=time]:focus-visible, textarea:focus-visible { border-color: var(--blue); outline-offset: 2px; }
 textarea { resize: vertical; min-height: 118px; }
 .other-input { margin-top: 12px !important; }
 .select { position: relative; }
@@ -171,6 +171,9 @@ input[type=email]:focus-visible { border-color: var(--blue); outline-offset: 2px
 
 /* Each submission keeps its own email, timestamp, and answers. */
 .individual-responses { display: grid; gap: 16px; }
+.survey-picker { display: flex; align-items: end; gap: 12px; padding: 18px; margin: 0 0 18px; border: 1px solid var(--line); border-radius: var(--radius); background: #fff; }
+.survey-picker label { display: grid; flex: 1; gap: 6px; min-width: 220px; font-size: 13px; font-weight: 700; }
+.survey-picker select { width: 100%; min-height: 48px; padding: 10px 12px; border: 1px solid #bfcbd0; border-radius: 8px; background: #fff; color: var(--ink); }
 .response-card { border: 1px solid var(--line); border-radius: 12px; background: #fff; overflow: hidden; }
 .response-summary { display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 22px 24px; cursor: pointer; list-style: none; }
 .response-summary::-webkit-details-marker { display: none; }
@@ -182,6 +185,10 @@ input[type=email]:focus-visible { border-color: var(--blue); outline-offset: 2px
 .response-toggle { width: 9px; height: 9px; border-bottom: 2px solid var(--blue); border-right: 2px solid var(--blue); transform: rotate(45deg); flex: none; margin-right: 4px; }
 .response-card[open] .response-toggle { transform: rotate(225deg); }
 .response-answers { margin: 0; padding: 0 24px; border-top: 1px solid var(--line); }
+.response-actions { display: flex; justify-content: flex-end; padding: 14px 24px 18px; border-top: 1px solid var(--line); }
+button.delete-response { min-height: 44px; padding: 10px 16px; border: 1px solid #b42318; border-radius: 8px; background: #fff; color: #b42318; font-size: 14px; font-weight: 700; cursor: pointer; }
+button.delete-response:hover { background: #fff1f0; }
+.delete-notice { padding: 12px 16px; border: 1px solid #a7d7c6; border-radius: 8px; background: #eef8f4; color: var(--green); }
 .response-answer { padding: 20px 0; border-bottom: 1px solid var(--line); }
 .response-answer:last-child { border-bottom: 0; }
 .response-answer dt { font-size: 14px; font-weight: 700; line-height: 1.5; }
@@ -191,4 +198,5 @@ input[type=email]:focus-visible { border-color: var(--blue); outline-offset: 2px
 .answer-options li + li { margin-top: 5px; }
 .answer-empty { color: var(--muted); font-size: 13px; }
 .answer-other { padding: 10px 12px; border-radius: 6px; background: var(--accent-soft); margin: 10px 0 0; }
-@media (max-width: 540px) { .response-summary { padding: 18px 16px; } .response-answers { padding: 0 16px; } .response-email { font-size: 15px; } }
+@media (max-width: 540px) { .response-summary { padding: 18px 16px; } .response-answers { padding: 0 16px; } .response-actions { padding: 12px 16px 16px; } .response-actions button { width: 100%; } .response-email { font-size: 15px; } }
+@media (max-width: 540px) { .survey-picker { align-items: stretch; flex-direction: column; } .survey-picker label { min-width: 0; } }
