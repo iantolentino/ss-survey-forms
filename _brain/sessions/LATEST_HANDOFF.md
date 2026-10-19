@@ -2,7 +2,7 @@
 
 ## Objective
 
-Make the Personal Equipment and Internet Access Poll Survey shift schedule easier to answer, and prepare the single PHP file for direct upload.
+Back up the user-tested Personal Equipment and Internet Access Poll Survey changes to GitHub, including the `_brain` project notes.
 
 ## Completed
 
@@ -12,17 +12,18 @@ Make the Personal Equipment and Internet Access Poll Survey shift schedule easie
 - Recorded the original survey implementation, local checks, and user-reported ZIP upload in the project notes.
 - Updated the shared survey renderer to offer two common shifts and custom start/end time pickers.
 - Added server-side validation and human-readable stored shift ranges without changing the database schema.
+- Pushed the survey implementation and `_brain` notes to the public GitHub `main` branch.
 
 ## Current State
 
-The user reports uploading the latest `survey/shared/lib.php` directly to cPanel and successfully testing the survey/results flow. Codex did not independently verify cPanel. The GitHub backup is being updated; keep results credentials as placeholders in the public repository.
+The user reports uploading the latest `survey/shared/lib.php` directly to cPanel and successfully testing the survey/results flow. Codex did not independently verify cPanel. The GitHub backup includes the survey code and `_brain` notes; results credentials remain placeholders.
 
 ## Decisions
 
 - Keep each survey's responses in a separate SQLite database.
 - Preserve the public repo's placeholder-password convention; configure deployed credentials outside the backup.
 - Results deletion applies only to the survey currently selected in the hub.
-- Upload only the updated PHP file at the matching `/survey/shared/lib.php` path to get the latest shift-picker change; no ZIP was built.
+- Keep deployed credentials and response databases outside the public backup.
 
 ## Blockers
 
@@ -38,18 +39,18 @@ The user reports uploading the latest `survey/shared/lib.php` directly to cPanel
 
 ## Next Action
 
-Commit and push the reviewed application and brain notes to the GitHub backup. Exclude all response databases and credentials.
+Continue from the backed-up state for the next requested survey change.
 
 ## Warnings
 
 - Response deletion is permanent. Confirm the selected survey before deleting.
 - Preserve existing response databases. The targeted ZIP excludes database files but updates shared runtime files.
-- Live testing is user-reported; Codex has not independently checked cPanel.
+- Live deployment and successful survey/results testing are user-reported; Codex has not independently checked cPanel.
 - Do not put password values in progress notes.
 
 ## Git Baseline
 
-- Base commit: c3b14ef40fc4e2accc2686835249ac43649575bb
+- Base commit: 2296cd66e18efbd4531dc8c19f032ab46c5b7c39
 - Branch: main
 - Working tree at handoff: has uncommitted changes
-- Verification: workflow gate REVIEW passed and changed renderer/validation sections were reviewed in bounded slices. No syntax or browser checks were run for this latest change; earlier local checks apply to the previous version. cPanel extraction/live behavior unverified.
+- Verification: the user reports successful live testing of the survey/results flow; Codex did not independently access cPanel. Public backup excludes credentials, SQLite response databases, and generated context manifests.

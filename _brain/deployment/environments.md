@@ -3,7 +3,7 @@
 | Environment | Purpose | Current state |
 | --- | --- | --- |
 | Local XAMPP | Development and feature checks | Current poll and result-management changes checked locally |
-| cPanel hosting | Hosted survey application | User reports uploading the targeted poll ZIP on 2026-10-16; extraction and live behavior are unconfirmed. Existing AI Use Survey remains hosted. |
+| cPanel hosting | Hosted survey application | User reports uploading the targeted poll ZIP and then the updated shared PHP file; the survey/results flow was tested successfully by the user. Existing AI Use Survey remains hosted. |
 
 ## Environment rules
 

@@ -35,7 +35,7 @@ Staff complete surveys. Authorized administrators review individual responses an
 | Database | SQLite through PDO |
 | Results access | Password-protected PHP sessions |
 | Local environment | XAMPP |
-| Intended hosting | cPanel; user reports uploading the targeted survey ZIP on 2026-10-16, but extraction and live behavior have not been confirmed |
+| Intended hosting | cPanel; user reports uploading the targeted survey ZIP and the later shared PHP update, then testing the survey/results flow successfully |
 
 ## Constraints
 
